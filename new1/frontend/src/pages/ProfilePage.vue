@@ -80,9 +80,19 @@
 
         <div v-if="participatedTrials.length">
           <div v-for="trial in participatedTrials" :key="trial.id" class="trial-block">
-            <h3>{{ trial.name }}</h3>
-            <p><strong>Question:</strong> {{ trial.question }}</p>
-            <p><strong>Options:</strong> {{ trial.options.join(", ") }}</p>
+            <button type="button" @click="toggleTrialDetails(trial.id)">
+              {{ trial.name }}
+            </button>
+            <div v-if="expandedTrialId === trial.id">
+              <p><strong>Question:</strong> {{ trial.question }}</p>
+              <div v-if="answersForTrial(trial).length">
+                <p v-for="answer in answersForTrial(trial)" :key="answer.id">
+                  <strong>Answer:</strong> {{ answer.answer_text }}
+                </p>
+              </div>
+              <p v-else>No answers recorded for this trial yet.</p>
+              <button type="button" @click="expandedTrialId = null">Hide</button>
+            </div>
           </div>
         </div>
         <p v-else class="empty-state">No trials joined yet.</p>
@@ -194,6 +204,7 @@ export default defineComponent({
         email: "",
         date_of_birth: "",
       },
+      expandedTrialId: null as number | null,
     };
   },
 
@@ -295,6 +306,22 @@ export default defineComponent({
   },
 
   methods: {
+    toggleTrialDetails(trialId: number) {
+      this.expandedTrialId = this.expandedTrialId === trialId ? null : trialId;
+    },
+
+    questionIdForTrial(trial: Trial): number | null {
+      if (trial.question_id) return trial.question_id;
+      const found = this.trialQuestions.find((q) => q.name === trial.question);
+      return found ? found.id : null;
+    },
+
+    answersForTrial(trial: Trial): TrialQuestionAnswer[] {
+      const questionId = this.questionIdForTrial(trial);
+      if (!questionId) return [];
+      return this.myAnswers.filter((answer) => answer.question === questionId);
+    },
+
     toggleEditField(field: string) {
       // field comes in like 'FirstName' etc.
       // @ts-ignore
