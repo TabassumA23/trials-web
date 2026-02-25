@@ -46,12 +46,20 @@ export const useUserStore = defineStore("user", {
 */
     // Fetch a single user by ID from the backend
     async fetchUser(userId: number) {
+      if (!userId || userId <= 0) {
+        window.location.href = "http://127.0.0.1:8000/login/";
+        return;
+      }
       try {
         const response = await fetch(`http://127.0.0.1:8000/user/${userId}/`, {
           credentials: "include",
         });
   
         if (response.status === 401) {
+          window.location.href = "http://127.0.0.1:8000/login/";
+          return;
+        }
+        if (response.status === 404) {
           window.location.href = "http://127.0.0.1:8000/login/";
           return;
         }
@@ -67,6 +75,10 @@ export const useUserStore = defineStore("user", {
     },
 
     async fetchUserReturn(userId: number) {
+      if (!userId || userId <= 0) {
+        window.location.href = "http://127.0.0.1:8000/login/";
+        return this.user;
+      }
       try {
         const response = await fetch(`http://127.0.0.1:8000/user/${userId}/`, {
           credentials: "include",
@@ -74,7 +86,11 @@ export const useUserStore = defineStore("user", {
   
         if (response.status === 401) {
           window.location.href = "http://127.0.0.1:8000/login/";
-          return null;
+          return this.user;
+        }
+        if (response.status === 404) {
+          window.location.href = "http://127.0.0.1:8000/login/";
+          return this.user;
         }
         if (!response.ok) {
           throw new Error("Failed to fetch user data");
@@ -84,7 +100,7 @@ export const useUserStore = defineStore("user", {
         return this.user
       } catch (error) {
         console.error("Error fetching user data:", error);
-        return null;
+        return this.user;
       }
     },
   },
