@@ -13,13 +13,11 @@ export interface TrialOption {
     id: number;
     api: string;
     name: string;
-    description: string;
     question_id: number | null;
 }
 export interface TrialQuestion {
     id: number;
     name: string;
-    description: string;
 }
 export interface Trial {
     id: number;

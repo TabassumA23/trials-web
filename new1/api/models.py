@@ -42,7 +42,6 @@ class TrialOption(models.Model):
     Class for the allergy
     '''
     name = models.CharField(max_length=100)
-    description = models.TextField(max_length=100)
     question = models.ForeignKey('TrialQuestion', on_delete=models.CASCADE, related_name='options', null=True, blank=True)
     
     
@@ -58,7 +57,6 @@ class TrialOption(models.Model):
             # Obtains URL pattern for individual cuisine
             'api': reverse('allergy api', args=[self.id]),
             'name': self.name,
-            'description': self.description,
             'question_id': self.question.id if self.question else None,
             
         }
@@ -68,7 +66,6 @@ class TrialQuestion(models.Model):
     Class for the cusine
     '''
     name = models.CharField(max_length=100)
-    description = models.TextField(max_length=100)
 
     
     def __str__(self):
@@ -81,7 +78,6 @@ class TrialQuestion(models.Model):
         return {
             "id": self.id,
             "name": self.name,
-            "description": self.description,
         }
 #Restaurant   
 class Trial(models.Model):
@@ -250,5 +246,4 @@ class TrialReview(models.Model):
                 'id': self.user.id,
             }
         }
-
 

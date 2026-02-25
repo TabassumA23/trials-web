@@ -12,7 +12,6 @@
       </select>
 
       <textarea v-model="newOption.name" placeholder="Name…" rows="1" />
-      <textarea v-model="newOption.description" placeholder="Description…" rows="3" />
 
       <button @click="createTrialOption">Add Option</button>
     </div>
@@ -33,7 +32,7 @@ import { getCookie } from "../utils/cookies";
 export default defineComponent({
   data() {
     return {
-      newOption: { name: "", description: "", question_id: 0 },
+      newOption: { name: "", question_id: 0 },
     };
   },
 
@@ -118,7 +117,6 @@ export default defineComponent({
 
       const payload = {
         name: this.newOption.name,
-        description: this.newOption.description,
         question_id: questionId,
         user_id: userId,
       };

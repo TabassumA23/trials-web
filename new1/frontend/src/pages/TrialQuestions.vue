@@ -9,12 +9,6 @@
         rows="1"
       />
 
-      <textarea
-        v-model="newTrialQuestion.description"
-        placeholder="Description…"
-        rows="3"
-      />
-
       <button @click="createTrialQuestion">Add Trial Question</button>
     </div>
   </main>
@@ -31,7 +25,7 @@ import { getCookie } from "../utils/cookies";
 export default defineComponent({
   data() {
     return {
-      newTrialQuestion: { name: "", description: "" },
+      newTrialQuestion: { name: "" },
     };
   },
 
@@ -96,7 +90,6 @@ export default defineComponent({
 
       const payload = {
         name: this.newTrialQuestion.name,
-        description: this.newTrialQuestion.description,
       };
 
       try {

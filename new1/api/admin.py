@@ -34,12 +34,12 @@ class TrialAdmin(admin.ModelAdmin):
 # Register the TrialQuestion model
 @admin.register(TrialQuestion)
 class TrialQuestionAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description')
+    list_display = ('name',)
 
 # Register the TrialOption model
 @admin.register(TrialOption)
 class TrialOptionAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description')
+    list_display = ('name', 'question')
 
 # Register the TrialReview model
 @admin.register(TrialReview)

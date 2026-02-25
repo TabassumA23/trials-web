@@ -325,7 +325,6 @@ def trial_questions_api(request: HttpRequest) -> JsonResponse:
         POST = json.loads(request.body)
         question = TrialQuestion.objects.create(
             name=POST['name'],
-            description=POST.get('description', '')
         )
         return JsonResponse(question.as_dict())
 
@@ -343,7 +342,6 @@ def trial_question_api(request: HttpRequest, question_id: int) -> JsonResponse:
     if request.method == 'PUT':
         PUT = json.loads(request.body)
         question.name = PUT.get("name", question.name)
-        question.description = PUT.get("description", question.description)
         question.save()
         return JsonResponse(question.as_dict())
 
@@ -471,7 +469,6 @@ def trial_options_api(request: HttpRequest) -> JsonResponse:
         question = TrialQuestion.objects.get(id=POST['question_id'])
         option = TrialOption.objects.create(
             name=POST['name'],
-            description=POST.get('description', ''),
             question=question,
         )
         return JsonResponse(option.as_dict())
@@ -497,7 +494,6 @@ def trial_option_api(request: HttpRequest, option_id: int) -> JsonResponse:
     if request.method == 'PUT':
         PUT = json.loads(request.body)
         option.name = PUT.get("name", option.name)
-        option.description = PUT.get("description", option.description)
         if "question_id" in PUT:
             option.question = TrialQuestion.objects.get(id=PUT["question_id"])
         option.save()
