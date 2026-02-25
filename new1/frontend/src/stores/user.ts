@@ -4,7 +4,17 @@ import { User } from "../types";
 export const useUserStore = defineStore("user", {
   state: (): {user: User, csrf:string} => ({
     
-    user: {} as User, // Holds the currently selected user
+    user: {
+      id: 0,
+      api: "",
+      username: "",
+      first_name: "",
+      last_name: "",
+      email: "",
+      phone_number: "",
+      date_of_birth: "",
+      is_staff: false,
+    }, // Holds the currently selected user
     //users: [] as User[], // Holds an array of users
     csrf: ''
   }),
@@ -41,6 +51,10 @@ export const useUserStore = defineStore("user", {
           credentials: "include",
         });
   
+        if (response.status === 401) {
+          window.location.href = "http://127.0.0.1:8000/login/";
+          return;
+        }
         if (!response.ok) {
           throw new Error("Failed to fetch user data");
         }
@@ -58,6 +72,10 @@ export const useUserStore = defineStore("user", {
           credentials: "include",
         });
   
+        if (response.status === 401) {
+          window.location.href = "http://127.0.0.1:8000/login/";
+          return null;
+        }
         if (!response.ok) {
           throw new Error("Failed to fetch user data");
         }
@@ -66,6 +84,7 @@ export const useUserStore = defineStore("user", {
         return this.user
       } catch (error) {
         console.error("Error fetching user data:", error);
+        return null;
       }
     },
   },
