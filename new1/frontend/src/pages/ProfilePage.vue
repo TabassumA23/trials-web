@@ -388,7 +388,7 @@ export default defineComponent({
 
     // derived “my …”
     myParticipations(): TrialParticipation[] {
-      return this.trialParticipations.filter((p) => p.user === this.user.id);
+      return (this.trialParticipations ?? []).filter((p) => p.user === this.user.id);
     },
 
     participatedTrials(): Trial[] {
@@ -397,15 +397,15 @@ export default defineComponent({
     },
 
     myAnswers(): TrialQuestionAnswer[] {
-      return this.trialQuestionAnswers.filter((a) => a.user === this.user.id);
+      return (this.trialQuestionAnswers ?? []).filter((a) => a.user === this.user.id);
     },
 
     mySelections(): TrialSpecificSelection[] {
-      return this.trialSpecificSelections.filter((s) => s.user === this.user.id);
+      return (this.trialSpecificSelections ?? []).filter((s) => s.user === this.user.id);
     },
 
     myReviews(): TrialReview[] {
-      return this.trialReviews.filter((r) => r.user.id === this.user.id);
+      return (this.trialReviews ?? []).filter((r) => r.user.id === this.user.id);
     },
   },
 });
