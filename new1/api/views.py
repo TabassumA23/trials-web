@@ -143,7 +143,7 @@ def users_api(request: HttpRequest) -> JsonResponse:
     if request.method == 'POST':
         try:
             POST = json.loads(request.body)
-            required_fields = ['first_name', 'last_name', 'email', 'date_of_birth', 'password', 'phone_number']
+            required_fields = ['username', 'first_name', 'last_name', 'email', 'date_of_birth', 'password']
             missing_fields = [field for field in required_fields if field not in POST]
             if missing_fields:
                 return JsonResponse({"error": f"Missing fields: {', '.join(missing_fields)}"}, status=400)
@@ -154,13 +154,14 @@ def users_api(request: HttpRequest) -> JsonResponse:
             option_ids = POST.get('option_ids', [])              # list of TrialOption IDs
 
             # Create user
-            user = User.objects.create(
+            user = User.objects.create_user(
+                username=POST['username'],
+                password=POST['password'],
                 first_name=POST['first_name'],
                 last_name=POST['last_name'],
                 email=POST['email'],
-                phone_number=phone_number,
+                phone_number=POST.get('phone_number', ''),
                 date_of_birth=POST['date_of_birth'],
-                password=POST['password'],
             )
 
              # Add trials (TrialParticipation)
@@ -218,7 +219,8 @@ def user_api(request: HttpRequest, user_id: int) -> JsonResponse:
             user.email = PUT.get("email", user.email)
             user.phone_number = PUT.get("phone_number", user.phone_number)
             user.date_of_birth = PUT.get("date_of_birth", user.date_of_birth)
-            user.password = PUT.get("password", user.password)
+            if "password" in PUT and PUT["password"]:
+                user.set_password(PUT["password"])
             user.save()
             return JsonResponse({"success": "User updated successfully."})
         except Exception as e:

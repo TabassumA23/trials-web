@@ -127,7 +127,7 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=20, blank=True)
     date_of_birth = models.DateField(default='2000-01-01')
-    password = models.CharField(max_length=100)
+    password = models.CharField(max_length=128)
     # user_type = models.CharField(
     #     max_length=20,
     #     choices=UserType.choices,
@@ -154,7 +154,6 @@ class User(AbstractUser):
             'email': self.email,
             'phone_number': self.phone_number,
             'date_of_birth': self.date_of_birth,
-            'password': self.password,
             'is_staff': self.is_staff,
             # 'user_type': self.user_type,
         }

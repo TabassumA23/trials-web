@@ -14,7 +14,6 @@ from . import database
 import os
 
 from pathlib import Path
-from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,10 +30,22 @@ SECRET_KEY = os.getenv(
 )
 
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+def env_bool(name: str, default: bool = False) -> bool:
+    return os.getenv(name, str(default)).lower() in {"1", "true", "yes", "on"}
 
-ALLOWED_HOSTS = ['*', 'https://group40-web-apps-ec22426.apps.a.comp-teach.qmul.ac.uk']
+
+def env_list(name: str, default: str = "") -> list[str]:
+    value = os.getenv(name, default)
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = env_bool("DJANGO_DEBUG", False)
+
+ALLOWED_HOSTS = env_list(
+    "DJANGO_ALLOWED_HOSTS",
+    "localhost,127.0.0.1,cure-link.uk,www.cure-link.uk",
+)
 
 
 # Application definition
@@ -112,16 +123,13 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Defined URLs
-LOGIN_REDIRECT_URL = 'http://localhost:5173/'
+LOGIN_REDIRECT_URL = os.getenv("LOGIN_REDIRECT_URL", "http://localhost:5173/")
 LOGIN_URL = '/login/'
 
-CORS_ALLOW_HEADERS = "*"
-CORS_ORGIN_WHITELIST = ["http://localhost:5173","https://group40-web-apps-ec22426.apps.a.comp-teach.qmul.ac.uk"]
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "https://group40-web-apps-ec22426.apps.a.comp-teach.qmul.ac.uk",
-]
+CORS_ALLOWED_ORIGINS = env_list(
+    "CORS_ALLOWED_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173,https://cure-link.uk,https://www.cure-link.uk",
+)
 CORS_ALLOW_CREDENTIALS = True 
 
 CORS_ALLOW_HEADERS = [ 
@@ -139,12 +147,23 @@ SESSION_COOKIE_SAMESITE = "Lax"
 
 CSRF_COOKIE_SAMESITE = "Lax"
 
-SESSION_COOKIE_HTTPONLY = False
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "https://group40-web-apps-ec22426.apps.a.comp-teach.qmul.ac.uk",
-]
+SESSION_COOKIE_HTTPONLY = True
+CSRF_TRUSTED_ORIGINS = env_list(
+    "CSRF_TRUSTED_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173,https://cure-link.uk,https://www.cure-link.uk",
+)
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+X_FRAME_OPTIONS = "DENY"
+
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_REFERRER_POLICY = "same-origin"
 
 # Internationalization
 # https://docs.djangoproject.com/en/stable/topics/i18n/
