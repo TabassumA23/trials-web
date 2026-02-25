@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="body">
+    <div class="profile-page">
+      <div class="card signup-card">
+        <h1>Welcome to Yumyelp!</h1>
+        <h3>For New Users:</h3>
+        <form id="signup-form" method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button id="submit-button" type="submit">Sign Up</button>
+        </form>
+        <button id="login-button">
+          <a href="{% url 'user login' %}">Already have an account? Login Here</a>
+        </button>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- Django Update Password Form. -->
+    <h3>For changing password : </h3>
+    <h4>Please note: you will have to re-login </h4>
+    <form id="login-form" action="" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button id="submit-button" type="submit" value="Submit">Update password</button>
+        <p>{{ message }}</p>
+    </form>
+{% endblock %}
