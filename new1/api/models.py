@@ -55,7 +55,7 @@ class TrialOption(models.Model):
         return {
             'id': self.id,
             # Obtains URL pattern for individual cuisine
-            'api': reverse('allergy api', args=[self.id]),
+            'api': reverse('trialOption api', args=[self.id]),
             'name': self.name,
             'question_id': self.question.id if self.question else None,
             
@@ -174,7 +174,7 @@ class TrialParticipation(models.Model):
      def as_dict(self):
         return{
             'id': self.id,
-            'api': reverse('chosen api', args=[self.id]),
+            'api': reverse('trialParticipation api', args=[self.id]),
             'user': self.user.id,
             'trial': self.trial.id,
             #'title': self.trial.title,
@@ -192,7 +192,7 @@ class TrialQuestionAnswer(models.Model):
     def as_dict(self):
         return {
             'id': self.id,
-            'api': reverse('trialquestionanswer api', args=[self.id]),
+            'api': reverse('trialQuestionAnswer api', args=[self.id]),
             'user': self.user.id,
             'question': self.question.id,
             'answer_text': self.answer_text,
@@ -209,7 +209,7 @@ class TrialSpecificSelection(models.Model):
     def as_dict(self):
         return {
             'id': self.id,
-            'api': reverse('trialspecificselection api', args=[self.id]),
+            'api': reverse('trialSpecificSelection api', args=[self.id]),
             'user': self.user.id,
             'option': self.option.id,
         }

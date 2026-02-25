@@ -133,9 +133,10 @@ def logout_user(request: HttpRequest) -> HttpResponse:
 # APIs for user model below
 
 
-@login_required
 def users_api(request: HttpRequest) -> JsonResponse:
     """API endpoint for the Users"""
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Unauthorized"}, status=401)
     if not request.user.is_staff:
         return JsonResponse({"error": "Forbidden"}, status=403)
 
@@ -196,9 +197,10 @@ def users_api(request: HttpRequest) -> JsonResponse:
         ]
     })
 
-@login_required
 def user_api(request: HttpRequest, user_id: int) -> JsonResponse:
     """API endpoint for a single user"""
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Unauthorized"}, status=401)
     if request.user.id != user_id and not request.user.is_staff:
         return JsonResponse({"error": "Forbidden"}, status=403)
 
