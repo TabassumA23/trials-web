@@ -15,31 +15,31 @@
                       <!-- Go to find friends-->
                     <router-link
                         class="link"
-                        :to="{name: 'Find Friends'}"
+                        :to="{name: 'Trials'}"
                     >
-                        Find A Friend
+                        Trials
                     </router-link>
                     <router-link
                         class="link"
-                        :to="{name: 'Reviews'}"
+                        :to="{name: 'Trial Participation'}"
                     >
                       
-                        Reviews
+                        Participation
                     </router-link>
                     <!-- reservations page-->
                     <router-link
                         class="link"
-                        :to="{name: 'Reservations'}"
+                        :to="{name: 'Trial Dashboard'}"
                     >
-                        Reservations
+                        Dashboard
                     </router-link>
 
                     <!-- wishlists page-->
                     <router-link
                         class="link"
-                        :to="{name: 'Wishlists'}"
+                        :to="{name: 'Trial Reviews'}"
                     >
-                        Wishlists
+                        Reviews
                     </router-link>
 
                     <!-- Logout -->
@@ -122,6 +122,5 @@ main {
   flex: 1;
 }
 </style>
-
 
 
