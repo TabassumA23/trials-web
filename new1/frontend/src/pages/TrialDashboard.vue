@@ -444,19 +444,19 @@ export default defineComponent({
     },
 
     trialParticipations(): TrialParticipation[] {
-      return this.trialParticipationsStore.trialParticipations;
+      return this.trialParticipationsStore?.trialParticipations ?? [];
     },
 
     trialQuestionAnswers(): TrialQuestionAnswer[] {
-      return this.trialQuestionAnswersStore.trialQuestionAnswers;
+      return this.trialQuestionAnswersStore?.trialQuestionAnswers ?? [];
     },
 
     trialSpecificSelections(): TrialSpecificSelection[] {
-      return this.trialSpecificSelectionsStore.trialSpecificSelections;
+      return this.trialSpecificSelectionsStore?.trialSpecificSelections ?? [];
     },
 
     trialReviews(): TrialReview[] {
-      return this.trialReviewsStore.trialReviews;
+      return this.trialReviewsStore?.trialReviews ?? [];
     },
 
     selectedTrial(): Trial | null {
@@ -466,15 +466,15 @@ export default defineComponent({
     },
 
     myTrialParticipations(): TrialParticipation[] {
-      return this.trialParticipations.filter((p) => p.user === this.user.id);
+      return (this.trialParticipations ?? []).filter((p) => p.user === this.user.id);
     },
 
     myQuestionAnswers(): TrialQuestionAnswer[] {
-      return this.trialQuestionAnswers.filter((a) => a.user === this.user.id);
+      return (this.trialQuestionAnswers ?? []).filter((a) => a.user === this.user.id);
     },
 
     mySpecificSelections(): TrialSpecificSelection[] {
-      return this.trialSpecificSelections.filter((s) => s.user === this.user.id);
+      return (this.trialSpecificSelections ?? []).filter((s) => s.user === this.user.id);
     },
 
     totalPages(): number {
