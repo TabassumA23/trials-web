@@ -16,7 +16,7 @@ export const useTrialQuestionAnswerStore = defineStore("trialQuestionAnswer", {
     async fetchTrialQuestionAnswer(trialQuestionAnswerId: number) {
       try {
         const response = await fetch(
-          `http://localhost:8000/trialQuestionAnswer/${trialQuestionAnswerId}/`
+          `http://127.0.0.1:8000/trialQuestionAnswer/${trialQuestionAnswerId}/`
         );
 
         if (!response.ok) {

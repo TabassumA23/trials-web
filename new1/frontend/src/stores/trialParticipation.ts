@@ -16,7 +16,7 @@ export const useTrialParticipationStore = defineStore("trialParticipation", {
     async fetchTrialParticipation(trialParticipationId: number) {
       try {
         const response = await fetch(
-          `http://localhost:8000/trialParticipation/${trialParticipationId}/`
+          `http://127.0.0.1:8000/trialParticipation/${trialParticipationId}/`
         );
 
         if (!response.ok) {

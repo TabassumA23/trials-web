@@ -81,14 +81,14 @@ export default defineComponent({
     // ===== TRIAL DATA FETCHING =====
 
     // 1) fetch all trials
-    const trialsResp = await fetch("http://localhost:8000/trials/");
+    const trialsResp = await fetch("http://127.0.0.1:8000/trials/");
     const trialsData = await trialsResp.json();
     const madeTrials = trialsData.trials as Trial[];
     const trialsStore = useTrialsStore();
     trialsStore.saveTrials(madeTrials);
 
     // 2) fetch all trial participations
-    const tpResp = await fetch("http://localhost:8000/trialParticipations/");
+    const tpResp = await fetch("http://127.0.0.1:8000/trialParticipations/");
     const tpData = await tpResp.json();
 
     const madeTP = tpData.trialParticipations as TrialParticipation[];
@@ -125,7 +125,7 @@ export default defineComponent({
       };
 
       try {
-        const response = await fetch("http://localhost:8000/trialParticipations/", {
+        const response = await fetch("http://127.0.0.1:8000/trialParticipations/", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${getCookie("access_token")}`,
@@ -156,7 +156,7 @@ export default defineComponent({
     async deleteTrialParticipation(trialParticipationId: number) {
       // optional delete logic if you want it like reservations
       try {
-        const response = await fetch(`http://localhost:8000/trialParticipation/${trialParticipationId}/`, {
+        const response = await fetch(`http://127.0.0.1:8000/trialParticipation/${trialParticipationId}/`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${getCookie("access_token")}`,

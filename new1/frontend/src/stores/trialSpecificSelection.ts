@@ -15,7 +15,7 @@ export const useTrialSpecificSelectionStore = defineStore("trialSpecificSelectio
     // Fetch a single selection by ID
     async fetchTrialSpecificSelection(id: number) {
       try {
-        const response = await fetch(`http://localhost:8000/trialSpecificSelection/${id}/`);
+        const response = await fetch(`http://127.0.0.1:8000/trialSpecificSelection/${id}/`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch trial specific selection");

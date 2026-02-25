@@ -37,7 +37,7 @@ export const useUserStore = defineStore("user", {
     // Fetch a single user by ID from the backend
     async fetchUser(userId: number) {
       try {
-        const response = await fetch(`http://localhost:8000/user/${userId}/`, {
+        const response = await fetch(`http://127.0.0.1:8000/user/${userId}/`, {
           credentials: "include",
         });
   
@@ -54,7 +54,7 @@ export const useUserStore = defineStore("user", {
 
     async fetchUserReturn(userId: number) {
       try {
-        const response = await fetch(`http://localhost:8000/user/${userId}/`, {
+        const response = await fetch(`http://127.0.0.1:8000/user/${userId}/`, {
           credentials: "include",
         });
   

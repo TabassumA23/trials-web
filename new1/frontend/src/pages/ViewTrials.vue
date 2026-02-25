@@ -142,7 +142,7 @@ export default defineComponent({
     }
 
     // ✅ Fetch all trial questions
-    let responseQ = await fetch(`http://localhost:8000/trialQuestions/`);
+    let responseQ = await fetch(`http://127.0.0.1:8000/trialQuestions/`);
     let questionData = await responseQ.json();
 
     let madeQuestions = questionData.trialQuestions as TrialQuestion[];
@@ -150,7 +150,7 @@ export default defineComponent({
     trialQuestionsStore.saveTrialQuestions(madeQuestions);
 
     // ✅ Fetch all trials
-    let responseT = await fetch(`http://localhost:8000/trials/`);
+    let responseT = await fetch(`http://127.0.0.1:8000/trials/`);
     let trialData = await responseT.json();
 
     let madeTrials = trialData.trials as Trial[];
@@ -170,7 +170,7 @@ export default defineComponent({
           [field.toLowerCase()]: this.editedUser[field.toLowerCase()],
         };
 
-        const response = await fetch(`http://localhost:8000/user/${this.user.id}/`, {
+        const response = await fetch(`http://127.0.0.1:8000/user/${this.user.id}/`, {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${cookies.get("access_token")}`,
@@ -200,7 +200,7 @@ export default defineComponent({
     /*
     async joinTrial(trialId: number) {
       const { cookies } = useCookies();
-      const response = await fetch("http://localhost:8000/trialParticipations/", {
+      const response = await fetch("http://127.0.0.1:8000/trialParticipations/", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${cookies.get("access_token")}`,

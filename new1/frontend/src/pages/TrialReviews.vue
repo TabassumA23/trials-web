@@ -181,12 +181,12 @@ export default defineComponent({
     }
 
     // 2) fetch trials (dropdown + filter)
-    const trialsResp = await fetch("http://localhost:8000/trials/");
+    const trialsResp = await fetch("http://127.0.0.1:8000/trials/");
     const trialsData = await trialsResp.json();
     this.trialsStore.saveTrials(trialsData.trials);
 
     // 3) fetch trial reviews
-    const resp = await fetch("http://localhost:8000/trialReviews/");
+    const resp = await fetch("http://127.0.0.1:8000/trialReviews/");
     const data = await resp.json();
     this.trialReviewsLocal = data.trialReviews; // backend should send { trialReviews: [...] }
   },
@@ -220,7 +220,7 @@ export default defineComponent({
           description: this.editedTrialReview.description.trim(),
         };
 
-        const res = await fetch(`http://localhost:8000/trialReview/${id}/`, {
+        const res = await fetch(`http://127.0.0.1:8000/trialReview/${id}/`, {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${getCookie("access_token")}`,
@@ -261,7 +261,7 @@ export default defineComponent({
       };
 
       try {
-        await fetch("http://localhost:8000/trialReviews/", {
+        await fetch("http://127.0.0.1:8000/trialReviews/", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${getCookie("access_token")}`,
@@ -288,7 +288,7 @@ export default defineComponent({
       }
 
       try {
-        const response = await fetch(`http://localhost:8000/trialReview/${reviewId}/`, {
+        const response = await fetch(`http://127.0.0.1:8000/trialReview/${reviewId}/`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${getCookie("access_token")}`,

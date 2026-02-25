@@ -124,17 +124,17 @@ export default defineComponent({
 
   async mounted() {
     // fetch trials
-    const tRes = await fetch("http://localhost:8000/trials/");
+    const tRes = await fetch("http://127.0.0.1:8000/trials/");
     const tData = await tRes.json();
     this.trialsStore.saveTrials(tData.trials);
 
     // fetch questions
-    const qRes = await fetch("http://localhost:8000/trialQuestions/");
+    const qRes = await fetch("http://127.0.0.1:8000/trialQuestions/");
     const qData = await qRes.json();
     this.trialQuestionsStore.saveTrialQuestions(qData.trialQuestions);
 
     // fetch options
-    const oRes = await fetch("http://localhost:8000/trialOptions/");
+    const oRes = await fetch("http://127.0.0.1:8000/trialOptions/");
     const oData = await oRes.json();
     this.trialOptionsStore.saveTrialOptions(oData.trialOptions ?? oData.trial_options ?? []);
   },
@@ -154,7 +154,7 @@ export default defineComponent({
     },
 
     async saveTrial(id: number) {
-      const res = await fetch(`http://localhost:8000/trial/${id}/`, {
+      const res = await fetch(`http://127.0.0.1:8000/trial/${id}/`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${getCookie("access_token")}`,
@@ -173,7 +173,7 @@ export default defineComponent({
     },
 
     async deleteTrial(id: number) {
-      await fetch(`http://localhost:8000/trial/${id}/`, {
+      await fetch(`http://127.0.0.1:8000/trial/${id}/`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${getCookie("access_token")}`,
@@ -194,7 +194,7 @@ export default defineComponent({
         alert("Please select at least one option.");
         return;
       }
-      const res = await fetch("http://localhost:8000/trials/", {
+      const res = await fetch("http://127.0.0.1:8000/trials/", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${getCookie("access_token")}`,

@@ -93,7 +93,7 @@ export default defineComponent({
       };
 
       try {
-        const response = await fetch("http://localhost:8000/trialQuestions/", {
+        const response = await fetch("http://127.0.0.1:8000/trialQuestions/", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${getCookie("access_token")}`,

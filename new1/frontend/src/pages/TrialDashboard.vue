@@ -258,37 +258,37 @@ export default defineComponent({
     // I used consistent plural paths.
     try {
       // Trials
-      const trialsResp = await fetch("http://localhost:8000/trials/");
+      const trialsResp = await fetch("http://127.0.0.1:8000/trials/");
       const trialsData = await trialsResp.json();
       this.trialsStore.saveTrials(trialsData.trials as Trial[]);
 
       // Trial Questions
-      const tqResp = await fetch("http://localhost:8000/trialQuestions/");
+      const tqResp = await fetch("http://127.0.0.1:8000/trialQuestions/");
       const tqData = await tqResp.json();
       this.trialQuestionsStore.saveTrialQuestions(tqData.trialQuestions as TrialQuestion[]);
 
       // Trial Options
-      const toResp = await fetch("http://localhost:8000/trialOptions/");
+      const toResp = await fetch("http://127.0.0.1:8000/trialOptions/");
       const toData = await toResp.json();
       this.trialOptionsStore.saveTrialOptions(toData.trialOptions as TrialOption[]);
 
       // Trial Participations
-      const tpResp = await fetch("http://localhost:8000/trialParticipations/");
+      const tpResp = await fetch("http://127.0.0.1:8000/trialParticipations/");
       const tpData = await tpResp.json();
       this.trialParticipationsStore.saveTrialParticipations(tpData.trialParticipations as TrialParticipation[]);
 
       // Trial Question Answers
-      const tqaResp = await fetch("http://localhost:8000/trialQuestionAnswers/");
+      const tqaResp = await fetch("http://127.0.0.1:8000/trialQuestionAnswers/");
       const tqaData = await tqaResp.json();
       this.trialQuestionAnswersStore.saveTrialQuestionAnswers(tqaData.trialQuestionAnswers as TrialQuestionAnswer[]);
 
       // Trial Specific Selections
-      const tssResp = await fetch("http://localhost:8000/trialSpecificSelections/");
+      const tssResp = await fetch("http://127.0.0.1:8000/trialSpecificSelections/");
       const tssData = await tssResp.json();
       this.trialSpecificSelectionsStore.saveTrialSpecificSelections(tssData.trialSpecificSelections as TrialSpecificSelection[]);
 
       // Trial Reviews
-      const trResp = await fetch("http://localhost:8000/trialReviews/");
+      const trResp = await fetch("http://127.0.0.1:8000/trialReviews/");
       const trData = await trResp.json();
       this.trialReviewsStore.saveTrialReviews(trData.trialReviews as TrialReview[]);
     } catch (e) {
@@ -321,7 +321,7 @@ export default defineComponent({
       if (!this.selectedTrialId) return;
 
       try {
-        const response = await fetch("http://localhost:8000/trialParticipation/", {
+        const response = await fetch("http://127.0.0.1:8000/trialParticipation/", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${getCookie("access_token")}`,
@@ -358,7 +358,7 @@ export default defineComponent({
       }
 
       try {
-        const response = await fetch("http://localhost:8000/trialAnswer/", {
+        const response = await fetch("http://127.0.0.1:8000/trialAnswer/", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${getCookie("access_token")}`,
@@ -400,7 +400,7 @@ export default defineComponent({
         // If your backend expects one POST per selection, we do that.
         // If your backend supports bulk, change it here.
         for (const optionId of optionIds) {
-          const response = await fetch("http://localhost:8000/trialSelection/", {
+          const response = await fetch("http://127.0.0.1:8000/trialSelection/", {
             method: "POST",
             headers: {
               Authorization: `Bearer ${getCookie("access_token")}`,

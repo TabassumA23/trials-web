@@ -79,13 +79,13 @@ export default defineComponent({
       }
     }
 
-    const qResp = await fetch("http://localhost:8000/trialQuestions/");
+    const qResp = await fetch("http://127.0.0.1:8000/trialQuestions/");
     const qData = await qResp.json();
     this.trialQuestionsStore.saveTrialQuestions(
       (qData.trialQuestions ?? qData.trial_questions ?? []) as TrialQuestion[]
     );
 
-    const oResp = await fetch("http://localhost:8000/trialOptions/");
+    const oResp = await fetch("http://127.0.0.1:8000/trialOptions/");
     const oData = await oResp.json();
     this.trialOptionsStore.saveTrialOptions(
       (oData.trialOptions ?? oData.trial_options ?? []) as TrialOption[]
@@ -122,7 +122,7 @@ export default defineComponent({
       };
 
       try {
-        const response = await fetch("http://localhost:8000/trialOptions/", {
+        const response = await fetch("http://127.0.0.1:8000/trialOptions/", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${getCookie("access_token")}`,

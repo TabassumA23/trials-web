@@ -25,7 +25,7 @@
           <p class="field">
             <strong>Username:</strong> {{ user.username }}
             <button class="btn-link">
-              <a href="http://localhost:8000/updateUser/">Change Username</a>
+              <a href="http://127.0.0.1:8000/updateUser/">Change Username</a>
             </button>
           </p>
 
@@ -64,7 +64,7 @@
           <p class="field">
             <strong>Password:</strong> ********
             <button class="btn-link">
-              <a href="http://localhost:8000/updatePass/">Change Password</a>
+              <a href="http://127.0.0.1:8000/updatePass/">Change Password</a>
             </button>
           </p>
 
@@ -261,43 +261,43 @@ export default defineComponent({
     // ⚠️ Adjust endpoints if your Django urls differ.
     try {
       // trials
-      const resTrials = await fetch("http://localhost:8000/trials/");
+      const resTrials = await fetch("http://127.0.0.1:8000/trials/");
       const dataTrials = await resTrials.json();
       this.trialsStore.saveTrials(dataTrials.trials as Trial[]);
 
       // trial questions
-      const resQuestions = await fetch("http://localhost:8000/trialQuestions/");
+      const resQuestions = await fetch("http://127.0.0.1:8000/trialQuestions/");
       const dataQuestions = await resQuestions.json();
       this.trialQuestionsStore.saveTrialQuestions(dataQuestions.trialQuestions as TrialQuestion[]);
 
       // trial options
-      const resOptions = await fetch("http://localhost:8000/trialOptions/");
+      const resOptions = await fetch("http://127.0.0.1:8000/trialOptions/");
       const dataOptions = await resOptions.json();
       this.trialOptionsStore.saveTrialOptions(dataOptions.trialOptions as TrialOption[]);
 
       // participations
-      const resParts = await fetch("http://localhost:8000/trialParticipations/");
+      const resParts = await fetch("http://127.0.0.1:8000/trialParticipations/");
       const dataParts = await resParts.json();
       this.trialParticipationsStore.saveTrialParticipations(
         dataParts.trialParticipations as TrialParticipation[]
       );
 
       // question answers
-      const resAnswers = await fetch("http://localhost:8000/trialQuestionAnswers/");
+      const resAnswers = await fetch("http://127.0.0.1:8000/trialQuestionAnswers/");
       const dataAnswers = await resAnswers.json();
       this.trialQuestionAnswersStore.saveTrialQuestionAnswers(
         dataAnswers.trialQuestionAnswers as TrialQuestionAnswer[]
       );
 
       // specific selections
-      const resSel = await fetch("http://localhost:8000/trialSpecificSelections/");
+      const resSel = await fetch("http://127.0.0.1:8000/trialSpecificSelections/");
       const dataSel = await resSel.json();
       this.trialSpecificSelectionsStore.saveTrialSpecificSelections(
         dataSel.trialSpecificSelections as TrialSpecificSelection[]
       );
 
       // reviews
-      const resReviews = await fetch("http://localhost:8000/trialReviews/");
+      const resReviews = await fetch("http://127.0.0.1:8000/trialReviews/");
       const dataReviews = await resReviews.json();
       this.trialReviewsStore.saveTrialReviews(dataReviews.trialReviews as TrialReview[]);
     } catch (error) {
@@ -346,7 +346,7 @@ export default defineComponent({
           [field]: (this.editedUser as any)[field],
         };
 
-        const response = await fetch(`http://localhost:8000/user/${this.user.id}/`, {
+        const response = await fetch(`http://127.0.0.1:8000/user/${this.user.id}/`, {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${getCookie("access_token")}`,

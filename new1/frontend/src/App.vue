@@ -43,7 +43,7 @@
                     </router-link>
 
                     <!-- Logout -->
-                    <a href= 'http://localhost:8000/logout/'>Log Out</a>
+                    <a href= 'http://127.0.0.1:8000/logout/'>Log Out</a>
                 </div>
         </div>
         <RouterView class="flex-shrink-0" />
