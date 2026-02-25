@@ -8,7 +8,7 @@
         <form id="signup-form" method="post">
           {% csrf_token %}
           {% for field in form %}
-            {% if field.name != "consent_to_health_data_processing" %}
+            {% if field.name != "consent_to_health_data_processing" and field.name != "selected_trial" and field.name != "trial_question_answer" %}
               <p>
                 {{ field.label_tag }}
                 {{ field }}
@@ -19,6 +19,37 @@
               </p>
             {% endif %}
           {% endfor %}
+          <p>
+            <label for="selected-trial">{{ form.selected_trial.label }}</label>
+            <select id="selected-trial" name="selected_trial" required>
+              <option value="">Choose a trial</option>
+              {% for trial in trials %}
+                <option
+                  value="{{ trial.id }}"
+                  data-question="{{ trial.question.name }}"
+                  {% if form.selected_trial.value|stringformat:"s" == trial.id|stringformat:"s" %}selected{% endif %}
+                >
+                  {{ trial.name }}
+                </option>
+              {% endfor %}
+            </select>
+            {% if form.selected_trial.errors %}
+              <br />
+              {{ form.selected_trial.errors }}
+            {% endif %}
+          </p>
+          <p id="trial-question-wrapper" style="display: none;">
+            <strong>Trial Question:</strong>
+            <span id="trial-question-text"></span>
+          </p>
+          <p>
+            {{ form.trial_question_answer.label_tag }}
+            {{ form.trial_question_answer }}
+            {% if form.trial_question_answer.errors %}
+              <br />
+              {{ form.trial_question_answer.errors }}
+            {% endif %}
+          </p>
           <p>
             <label>
               {{ form.consent_to_health_data_processing }}
@@ -39,4 +70,28 @@
       </div>
     </div>
   </div>
+  <script>
+    (function () {
+      const trialSelect = document.getElementById("selected-trial");
+      const questionWrapper = document.getElementById("trial-question-wrapper");
+      const questionText = document.getElementById("trial-question-text");
+
+      function updateQuestionText() {
+        const selectedOption = trialSelect.options[trialSelect.selectedIndex];
+        const question = selectedOption ? selectedOption.getAttribute("data-question") : "";
+        if (question) {
+          questionText.textContent = question;
+          questionWrapper.style.display = "block";
+        } else {
+          questionText.textContent = "";
+          questionWrapper.style.display = "none";
+        }
+      }
+
+      if (trialSelect) {
+        trialSelect.addEventListener("change", updateQuestionText);
+        updateQuestionText();
+      }
+    })();
+  </script>
 {% endblock %}

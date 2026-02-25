@@ -1,4 +1,5 @@
 from django import forms
+from .models import Trial
 # from .models import UserType
 
 # Form for letting user log in
@@ -57,10 +58,25 @@ class SignUpForm(forms.Form):
         # Adding a password widget for password 
         widget=forms.PasswordInput()
     )
+    selected_trial = forms.ModelChoiceField(
+        label="Select Trial ",
+        queryset=Trial.objects.none(),
+        required=True,
+        empty_label="Choose a trial",
+    )
+    trial_question_answer = forms.CharField(
+        label="Answer the trial question ",
+        required=True,
+        widget=forms.Textarea(attrs={"rows": 3}),
+    )
     consent_to_health_data_processing = forms.BooleanField(
         required=True,
         label="I consent to Cure-Link health data processing for trial matching.",
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["selected_trial"].queryset = Trial.objects.select_related("question").all()
     # user_type = forms.ChoiceField(
     #     label="User Type",
     #     choices=UserType.choices,

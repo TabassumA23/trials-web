@@ -51,13 +51,13 @@ def signup_user(request: HttpRequest) -> HttpResponse:
             date_of_birth = form.cleaned_data["date_of_birth"]
             phone_number = form.cleaned_data.get("phone_number")
             password = form.cleaned_data["password"]
+            selected_trial = form.cleaned_data["selected_trial"]
+            trial_question_answer = form.cleaned_data["trial_question_answer"]
             # user_type field commented out in your model
             # user_type = form.cleaned_data.get("user_type", UserType.CUSTOMER)
 
-            # Authenticate first to check if user already exists
-            user = auth.authenticate(username=username, password=password)
-            # Rendering Vue SPA if an existing user is not found
-            if user is None:
+            # Check if username already exists before creating account
+            if not User.objects.filter(username=username).exists():
                 # Create a new user with input form details
                 user = User.objects.create_user(
                     username=username,
@@ -71,6 +71,14 @@ def signup_user(request: HttpRequest) -> HttpResponse:
                 # user.user_type = user_type  # Uncomment if you re-enable user_type
                 user.save()
 
+                # Save trial enrollment and answer captured during signup
+                TrialParticipation.objects.create(user=user, trial=selected_trial)
+                TrialQuestionAnswer.objects.create(
+                    user=user,
+                    question=selected_trial.question,
+                    answer_text=trial_question_answer,
+                )
+
                 # Log in the new user
                 auth.login(request, user)
 
@@ -79,10 +87,22 @@ def signup_user(request: HttpRequest) -> HttpResponse:
                 return redirect(f"{settings.LOGIN_REDIRECT_URL}?u={user_id}")
             else:
                 # Show failed user creation
-                return render(request, "api/auth/signup.html", {"form": form, "message": 'User already exists with that username. Please try again.'})
+                return render(
+                    request,
+                    "api/auth/signup.html",
+                    {
+                        "form": form,
+                        "trials": Trial.objects.select_related("question").all(),
+                        "message": "User already exists with that username. Please try again.",
+                    },
+                )
     else:
         form = SignUpForm()
-    return render(request, "api/auth/signup.html", {"form": form})
+    return render(
+        request,
+        "api/auth/signup.html",
+        {"form": form, "trials": Trial.objects.select_related("question").all()},
+    )
         
 @login_required
 # Logout user below
@@ -592,4 +612,3 @@ def trial_api(request: HttpRequest, trial_id: int) -> JsonResponse:
 
 #     # GET reservation data
 #     return JsonResponse(reservation.as_dict())
-
