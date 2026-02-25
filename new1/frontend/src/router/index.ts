@@ -8,7 +8,7 @@ import TrialOptions from "../pages/TrialOptions.vue";
 import TrialParticipation from "../pages/TrialParticipation.vue";
 import TrialReviews from "../pages/TrialReviews.vue";
 
-const router = createRouter({
+export const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: "/", name: "Profile Page", component: ProfilePage },
