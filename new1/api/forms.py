@@ -81,6 +81,14 @@ class SignUpForm(forms.Form):
             ("", "Choose an answer option"),
             *[(str(option.id), option.name) for option in TrialOption.objects.all()],
         ]
+
+    def clean_consent_to_health_data_processing(self):
+        consent = self.cleaned_data.get("consent_to_health_data_processing")
+        if consent is not True:
+            raise forms.ValidationError(
+                "You must provide explicit consent before signing up."
+            )
+        return consent
     # user_type = forms.ChoiceField(
     #     label="User Type",
     #     choices=UserType.choices,
