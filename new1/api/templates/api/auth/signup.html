@@ -3,11 +3,34 @@
   <div class="body">
     <div class="profile-page">
       <div class="card signup-card">
-        <h1>Welcome to Yumyelp!</h1>
+        <h1>Welcome to Cure-Link!</h1>
         <h3>For New Users:</h3>
         <form id="signup-form" method="post">
           {% csrf_token %}
-          {{ form.as_p }}
+          {% for field in form %}
+            {% if field.name != "consent_to_health_data_processing" %}
+              <p>
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                  <br />
+                  {{ field.errors }}
+                {% endif %}
+              </p>
+            {% endif %}
+          {% endfor %}
+          <p>
+            <label>
+              {{ form.consent_to_health_data_processing }}
+              I explicitly consent to Cure-Link Ltd processing my health information (which may include physical measurements, lifestyle factors, medical history, and clinical eligibility criteria) for the purpose of matching me with relevant clinical trials. I understand I can withdraw this consent at any time by contacting
+              <a href="mailto:privacy@cure-link.uk">privacy@cure-link.uk</a>.
+              <a href="https://cure-link.uk/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+            </label>
+            {% if form.consent_to_health_data_processing.errors %}
+              <br />
+              {{ form.consent_to_health_data_processing.errors }}
+            {% endif %}
+          </p>
           <button id="submit-button" type="submit">Sign Up</button>
         </form>
         <button id="login-button">

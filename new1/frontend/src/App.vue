@@ -3,7 +3,7 @@
         <!--Nav bar for every page -->
         <div class="navbar">
        
-                <h2>YumYelp</h2>
+                <h2>Cure-Link</h2>
                 <div class="nav-parts">
                       <!--Go to home page / profile page-->
                     <router-link
@@ -60,5 +60,4 @@
     });
 
 </script>
-
 

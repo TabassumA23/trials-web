@@ -57,6 +57,10 @@ class SignUpForm(forms.Form):
         # Adding a password widget for password 
         widget=forms.PasswordInput()
     )
+    consent_to_health_data_processing = forms.BooleanField(
+        required=True,
+        label="I consent to Cure-Link health data processing for trial matching.",
+    )
     # user_type = forms.ChoiceField(
     #     label="User Type",
     #     choices=UserType.choices,
