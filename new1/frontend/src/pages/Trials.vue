@@ -17,7 +17,7 @@
 
       <label>Select Options:</label>
       <select v-model="newTrial.option_ids" multiple>
-        <option v-for="o in trialOptions" :key="o.id" :value="o.id">
+        <option v-for="o in optionsForSelectedQuestion" :key="o.id" :value="o.id">
           {{ o.name }}
         </option>
       </select>
@@ -56,7 +56,7 @@
           </select>
 
           <select v-model="editedTrial.option_ids" multiple>
-            <option v-for="o in trialOptions" :key="o.id" :value="o.id">
+            <option v-for="o in optionsForEditedQuestion" :key="o.id" :value="o.id">
               {{ o.name }}
             </option>
           </select>
@@ -136,7 +136,7 @@ export default defineComponent({
     // fetch options
     const oRes = await fetch("http://localhost:8000/trialOptions/");
     const oData = await oRes.json();
-    this.trialOptionsStore.saveTrialOptions(oData.trialOptions);
+    this.trialOptionsStore.saveTrialOptions(oData.trialOptions ?? oData.trial_options ?? []);
   },
 
   methods: {
@@ -145,7 +145,7 @@ export default defineComponent({
       this.editedTrial = {
         name: t.name,
         question_id: t.question_id,
-        option_ids: t.option_ids,
+        option_ids: t.option_ids ?? [],
       };
     },
 
@@ -186,6 +186,14 @@ export default defineComponent({
     },
 
     async createTrial() {
+      if (!this.newTrial.question_id) {
+        alert("Please select a question.");
+        return;
+      }
+      if (!this.newTrial.option_ids.length) {
+        alert("Please select at least one option.");
+        return;
+      }
       const res = await fetch("http://localhost:8000/trials/", {
         method: "POST",
         headers: {
@@ -223,6 +231,12 @@ export default defineComponent({
     trialOptions() {
       return this.trialOptionsStore.trialOptions;
     },
+    optionsForSelectedQuestion() {
+      return this.trialOptions.filter(o => o.question_id === Number(this.newTrial.question_id));
+    },
+    optionsForEditedQuestion() {
+      return this.trialOptions.filter(o => o.question_id === Number(this.editedTrial.question_id));
+    },
 
     filteredTrials() {
       return this.trials.filter(t => {
@@ -239,6 +253,16 @@ export default defineComponent({
     paginatedTrials() {
       const start = (this.currentPage - 1) * this.perPage;
       return this.filteredTrials.slice(start, start + this.perPage);
+    },
+  },
+  watch: {
+    "newTrial.question_id"() {
+      const allowedIds = new Set(this.optionsForSelectedQuestion.map(o => o.id));
+      this.newTrial.option_ids = this.newTrial.option_ids.filter(id => allowedIds.has(id));
+    },
+    "editedTrial.question_id"() {
+      const allowedIds = new Set(this.optionsForEditedQuestion.map(o => o.id));
+      this.editedTrial.option_ids = this.editedTrial.option_ids.filter(id => allowedIds.has(id));
     },
   },
 

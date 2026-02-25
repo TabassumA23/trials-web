@@ -468,14 +468,23 @@ def trial_options_api(request: HttpRequest) -> JsonResponse:
 
     if request.method == 'POST':
         POST = json.loads(request.body)
+        question = TrialQuestion.objects.get(id=POST['question_id'])
         option = TrialOption.objects.create(
             name=POST['name'],
-            description=POST.get('description', '')
+            description=POST.get('description', ''),
+            question=question,
         )
         return JsonResponse(option.as_dict())
 
+    question_id = request.GET.get("question_id")
+    options_qs = TrialOption.objects.all()
+    if question_id:
+        options_qs = options_qs.filter(question_id=question_id)
+
+    option_list = [option.as_dict() for option in options_qs]
     return JsonResponse({
-        'trial_options': [option.as_dict() for option in TrialOption.objects.all()]
+        'trial_options': option_list,
+        'trialOptions': option_list,
     })
 
 def trial_option_api(request: HttpRequest, option_id: int) -> JsonResponse:
@@ -489,6 +498,8 @@ def trial_option_api(request: HttpRequest, option_id: int) -> JsonResponse:
         PUT = json.loads(request.body)
         option.name = PUT.get("name", option.name)
         option.description = PUT.get("description", option.description)
+        if "question_id" in PUT:
+            option.question = TrialQuestion.objects.get(id=PUT["question_id"])
         option.save()
         return JsonResponse(option.as_dict())
 
@@ -513,7 +524,12 @@ def trials_api(request: HttpRequest) -> JsonResponse:
             user=user,
             question=question
         )
-        options = TrialOption.objects.filter(id__in=option_ids)
+        options = TrialOption.objects.filter(id__in=option_ids, question=question)
+        if len(option_ids) != options.count():
+            return JsonResponse(
+                {"error": "Some selected options do not belong to the selected trial question."},
+                status=400,
+            )
         trial.options.set(options)
         trial.save()
         return JsonResponse(trial.as_dict())
@@ -534,7 +550,15 @@ def trial_api(request: HttpRequest, trial_id: int) -> JsonResponse:
         if "question_id" in PUT:
             trial.question = TrialQuestion.objects.get(id=PUT["question_id"])
         if "option_ids" in PUT:
-            options = TrialOption.objects.filter(id__in=PUT["option_ids"])
+            options = TrialOption.objects.filter(
+                id__in=PUT["option_ids"],
+                question=trial.question,
+            )
+            if len(PUT["option_ids"]) != options.count():
+                return JsonResponse(
+                    {"error": "Some selected options do not belong to the selected trial question."},
+                    status=400,
+                )
             trial.options.set(options)
         trial.save()
         return JsonResponse(trial.as_dict())

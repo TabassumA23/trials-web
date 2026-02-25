@@ -43,6 +43,7 @@ class TrialOption(models.Model):
     '''
     name = models.CharField(max_length=100)
     description = models.TextField(max_length=100)
+    question = models.ForeignKey('TrialQuestion', on_delete=models.CASCADE, related_name='options', null=True, blank=True)
     
     
     def __str__(self):
@@ -58,6 +59,7 @@ class TrialOption(models.Model):
             'api': reverse('allergy api', args=[self.id]),
             'name': self.name,
             'description': self.description,
+            'question_id': self.question.id if self.question else None,
             
         }
 #Cuisine 
@@ -99,7 +101,9 @@ class Trial(models.Model):
             'id': self.id,
             'api': reverse('trial api', args=[self.id]),
             'name': self.name,
+            'question_id': self.question.id,
             'question': self.question.name,
+            'option_ids': [option.id for option in self.options.all()],
             'options': [option.name for option in self.options.all()],
             'user': {
                 'first_name': self.user.first_name,
@@ -246,6 +250,5 @@ class TrialReview(models.Model):
                 'id': self.user.id,
             }
         }
-
 
 

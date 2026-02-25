@@ -3,6 +3,14 @@
     <div class="card form-card">
       <h3>Create a New Trial Option</h3>
 
+      <label>Select Question:</label>
+      <select v-model="newOption.question_id">
+        <option :value="0">Choose a question</option>
+        <option v-for="q in trialQuestions" :key="q.id" :value="q.id">
+          {{ q.name }}
+        </option>
+      </select>
+
       <textarea v-model="newOption.name" placeholder="Name…" rows="1" />
       <textarea v-model="newOption.description" placeholder="Description…" rows="3" />
 
@@ -13,18 +21,19 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { User, TrialOption } from "../types/index";
+import { User, TrialOption, TrialQuestion } from "../types/index";
 
 import { useUserStore } from "../stores/user";
 import { useUsersStore } from "../stores/users";
 import { useTrialOptionsStore } from "../stores/trialOptions";
+import { useTrialQuestionsStore } from "../stores/trialQuestions";
 
 import { getCookie } from "../utils/cookies";
 
 export default defineComponent({
   data() {
     return {
-      newOption: { name: "", description: "" },
+      newOption: { name: "", description: "", question_id: 0 },
     };
   },
 
@@ -70,6 +79,18 @@ export default defineComponent({
         }
       }
     }
+
+    const qResp = await fetch("http://localhost:8000/trialQuestions/");
+    const qData = await qResp.json();
+    this.trialQuestionsStore.saveTrialQuestions(
+      (qData.trialQuestions ?? qData.trial_questions ?? []) as TrialQuestion[]
+    );
+
+    const oResp = await fetch("http://localhost:8000/trialOptions/");
+    const oData = await oResp.json();
+    this.trialOptionsStore.saveTrialOptions(
+      (oData.trialOptions ?? oData.trial_options ?? []) as TrialOption[]
+    );
   },
 
   methods: {
@@ -79,21 +100,26 @@ export default defineComponent({
       const userId = this.userStore.user.id;
 
       const rawName = this.newOption.name.trim();
+      const questionId = Number(this.newOption.question_id);
 
       // Reject blank
       if (!rawName) {
         return alert("Option name can’t be empty!");
       }
+      if (!questionId) {
+        return alert("Please select a trial question first.");
+      }
 
       // Case-insensitive duplicate check
       const lc = rawName.toLowerCase();
-      if (trialOptionsStore.trialOptions.some(o => o.name.toLowerCase() === lc)) {
+      if (trialOptionsStore.trialOptions.some(o => o.name.toLowerCase() === lc && o.question_id === questionId)) {
         return alert("You already created an option with that name.");
       }
 
       const payload = {
         name: this.newOption.name,
         description: this.newOption.description,
+        question_id: questionId,
         user_id: userId,
       };
 
@@ -111,8 +137,7 @@ export default defineComponent({
 
         if (!response.ok) throw new Error("Failed to create option");
 
-        const data = await response.json();
-        const created = data.trialOption as TrialOption;
+        const created = (await response.json()) as TrialOption;
 
         trialOptionsStore.addTrialOption(created);
 
@@ -133,14 +158,18 @@ export default defineComponent({
     trialOptions(): TrialOption[] {
       return this.trialOptionsStore.trialOptions;
     },
+    trialQuestions(): TrialQuestion[] {
+      return this.trialQuestionsStore.trialQuestions;
+    },
   },
 
   setup() {
     const userStore = useUserStore();
     const usersStore = useUsersStore();
     const trialOptionsStore = useTrialOptionsStore();
+    const trialQuestionsStore = useTrialQuestionsStore();
 
-    return { userStore, usersStore, trialOptionsStore };
+    return { userStore, usersStore, trialOptionsStore, trialQuestionsStore };
   },
 });
 </script>

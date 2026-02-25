@@ -14,6 +14,7 @@ export interface TrialOption {
     api: string;
     name: string;
     description: string;
+    question_id: number | null;
 }
 export interface TrialQuestion {
     id: number;
@@ -25,6 +26,8 @@ export interface Trial {
     api: string;
     name: string;
     question: string;      // question.name from backend
+    question_id: number;
+    option_ids: number[];
     options: string[];     // option names
     user: {
         id: number;
