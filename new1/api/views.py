@@ -52,9 +52,23 @@ def signup_user(request: HttpRequest) -> HttpResponse:
             phone_number = form.cleaned_data.get("phone_number")
             password = form.cleaned_data["password"]
             selected_trial = form.cleaned_data["selected_trial"]
-            trial_question_answer = form.cleaned_data["trial_question_answer"]
+            selected_trial_option_id = form.cleaned_data["selected_trial_option"]
             # user_type field commented out in your model
             # user_type = form.cleaned_data.get("user_type", UserType.CUSTOMER)
+
+            selected_trial_option = selected_trial.options.filter(
+                id=selected_trial_option_id
+            ).first()
+            if selected_trial_option is None:
+                form.add_error(
+                    "selected_trial_option",
+                    "Please select a valid option for the selected trial.",
+                )
+                return render(
+                    request,
+                    "api/auth/signup.html",
+                    {"form": form, "trials": Trial.objects.select_related("question").prefetch_related("options").all()},
+                )
 
             # Check if username already exists before creating account
             if not User.objects.filter(username=username).exists():
@@ -76,7 +90,11 @@ def signup_user(request: HttpRequest) -> HttpResponse:
                 TrialQuestionAnswer.objects.create(
                     user=user,
                     question=selected_trial.question,
-                    answer_text=trial_question_answer,
+                    answer_text=selected_trial_option.name,
+                )
+                TrialSpecificSelection.objects.create(
+                    user=user,
+                    option=selected_trial_option,
                 )
 
                 # Log in the new user
@@ -92,7 +110,7 @@ def signup_user(request: HttpRequest) -> HttpResponse:
                     "api/auth/signup.html",
                     {
                         "form": form,
-                        "trials": Trial.objects.select_related("question").all(),
+                        "trials": Trial.objects.select_related("question").prefetch_related("options").all(),
                         "message": "User already exists with that username. Please try again.",
                     },
                 )
@@ -101,7 +119,7 @@ def signup_user(request: HttpRequest) -> HttpResponse:
     return render(
         request,
         "api/auth/signup.html",
-        {"form": form, "trials": Trial.objects.select_related("question").all()},
+        {"form": form, "trials": Trial.objects.select_related("question").prefetch_related("options").all()},
     )
         
 @login_required

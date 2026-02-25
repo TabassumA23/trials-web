@@ -8,7 +8,7 @@
         <form id="signup-form" method="post">
           {% csrf_token %}
           {% for field in form %}
-            {% if field.name != "consent_to_health_data_processing" and field.name != "selected_trial" and field.name != "trial_question_answer" %}
+            {% if field.name != "consent_to_health_data_processing" and field.name != "selected_trial" and field.name != "selected_trial_option" %}
               <p>
                 {{ field.label_tag }}
                 {{ field }}
@@ -43,11 +43,13 @@
             <span id="trial-question-text"></span>
           </p>
           <p>
-            {{ form.trial_question_answer.label_tag }}
-            {{ form.trial_question_answer }}
-            {% if form.trial_question_answer.errors %}
+            <label for="selected-trial-option">{{ form.selected_trial_option.label }}</label>
+            <select id="selected-trial-option" name="selected_trial_option" required>
+              <option value="">Choose an answer option</option>
+            </select>
+            {% if form.selected_trial_option.errors %}
               <br />
-              {{ form.trial_question_answer.errors }}
+              {{ form.selected_trial_option.errors }}
             {% endif %}
           </p>
           <p>
@@ -73,12 +75,42 @@
   <script>
     (function () {
       const trialSelect = document.getElementById("selected-trial");
+      const optionSelect = document.getElementById("selected-trial-option");
       const questionWrapper = document.getElementById("trial-question-wrapper");
       const questionText = document.getElementById("trial-question-text");
+      const previouslySelectedOption = "{{ form.selected_trial_option.value|default:''|escapejs }}";
+      const trialOptionsById = {
+        {% for trial in trials %}
+          "{{ trial.id }}": [
+            {% for opt in trial.options.all %}
+              { id: "{{ opt.id }}", name: "{{ opt.name|escapejs }}" }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+          ]{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      };
 
       function updateQuestionText() {
         const selectedOption = trialSelect.options[trialSelect.selectedIndex];
         const question = selectedOption ? selectedOption.getAttribute("data-question") : "";
+        const trialId = selectedOption ? selectedOption.value : "";
+        const options = trialOptionsById[trialId] || [];
+
+        optionSelect.innerHTML = "";
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "Choose an answer option";
+        optionSelect.appendChild(placeholder);
+
+        options.forEach((opt) => {
+          const optionNode = document.createElement("option");
+          optionNode.value = opt.id;
+          optionNode.textContent = opt.name;
+          if (opt.id === previouslySelectedOption) {
+            optionNode.selected = true;
+          }
+          optionSelect.appendChild(optionNode);
+        });
+
         if (question) {
           questionText.textContent = question;
           questionWrapper.style.display = "block";
@@ -88,7 +120,7 @@
         }
       }
 
-      if (trialSelect) {
+      if (trialSelect && optionSelect) {
         trialSelect.addEventListener("change", updateQuestionText);
         updateQuestionText();
       }

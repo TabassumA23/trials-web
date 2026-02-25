@@ -1,5 +1,5 @@
 from django import forms
-from .models import Trial
+from .models import Trial, TrialOption
 # from .models import UserType
 
 # Form for letting user log in
@@ -64,10 +64,10 @@ class SignUpForm(forms.Form):
         required=True,
         empty_label="Choose a trial",
     )
-    trial_question_answer = forms.CharField(
-        label="Answer the trial question ",
+    selected_trial_option = forms.ChoiceField(
+        label="Select Trial Answer Option ",
         required=True,
-        widget=forms.Textarea(attrs={"rows": 3}),
+        choices=[("", "Choose an answer option")],
     )
     consent_to_health_data_processing = forms.BooleanField(
         required=True,
@@ -77,6 +77,10 @@ class SignUpForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["selected_trial"].queryset = Trial.objects.select_related("question").all()
+        self.fields["selected_trial_option"].choices = [
+            ("", "Choose an answer option"),
+            *[(str(option.id), option.name) for option in TrialOption.objects.all()],
+        ]
     # user_type = forms.ChoiceField(
     #     label="User Type",
     #     choices=UserType.choices,
