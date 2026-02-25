@@ -155,6 +155,7 @@ class User(AbstractUser):
             'phone_number': self.phone_number,
             'date_of_birth': self.date_of_birth,
             'password': self.password,
+            'is_staff': self.is_staff,
             # 'user_type': self.user_type,
         }
 
@@ -246,4 +247,3 @@ class TrialReview(models.Model):
                 'id': self.user.id,
             }
         }
-

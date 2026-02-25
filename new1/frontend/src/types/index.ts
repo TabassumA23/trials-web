@@ -8,6 +8,7 @@ export interface User {
     phone_number: string;
     date_of_birth: string;   // Django DateField → string in TS
     password: string;
+    is_staff: boolean;
 }
 export interface TrialOption {
     id: number;

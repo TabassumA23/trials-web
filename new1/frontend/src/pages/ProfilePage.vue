@@ -7,7 +7,7 @@
         <p class="subtitle">Manage your profile & view your trial activity</p>
       </div>
 
-      <nav class="hero-nav">
+      <nav class="hero-nav" v-if="user.is_staff">
         <RouterLink to="/trials" class="btn">View / Join Trials</RouterLink>
         <RouterLink to="/trialDashboard" class="btn">Trial Dashboard</RouterLink>
         <RouterLink to="/trialQuestions" class="btn">Add Trial Questions</RouterLink>
@@ -69,7 +69,7 @@
           </p>
 
           <p class="field">
-            <strong>User type:</strong> {{ user.user_type }}
+            <strong>User type:</strong> {{ user.is_staff ? "Staff" : "Client" }}
           </p>
         </section>
       </div>

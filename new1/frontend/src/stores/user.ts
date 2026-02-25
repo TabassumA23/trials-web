@@ -37,7 +37,9 @@ export const useUserStore = defineStore("user", {
     // Fetch a single user by ID from the backend
     async fetchUser(userId: number) {
       try {
-        const response = await fetch(`http://localhost:8000/user/${userId}/`);
+        const response = await fetch(`http://localhost:8000/user/${userId}/`, {
+          credentials: "include",
+        });
   
         if (!response.ok) {
           throw new Error("Failed to fetch user data");
@@ -52,7 +54,9 @@ export const useUserStore = defineStore("user", {
 
     async fetchUserReturn(userId: number) {
       try {
-        const response = await fetch(`http://localhost:8000/user/${userId}/`);
+        const response = await fetch(`http://localhost:8000/user/${userId}/`, {
+          credentials: "include",
+        });
   
         if (!response.ok) {
           throw new Error("Failed to fetch user data");
