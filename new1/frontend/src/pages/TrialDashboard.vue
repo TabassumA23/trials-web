@@ -188,7 +188,7 @@ import { useTrialQuestionAnswersStore } from "../stores/trialQuestionAnswers";
 import { useTrialSpecificSelectionsStore } from "../stores/trialSpecificSelections";
 import { useTrialReviewsStore } from "../stores/trialReviews";
 
-import VueCookies from "vue-cookies";
+import { getCookie } from "../utils/cookies";
 
 export default defineComponent({
   data() {
@@ -324,9 +324,9 @@ export default defineComponent({
         const response = await fetch("http://localhost:8000/trialParticipation/", {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${VueCookies.get("access_token")}`,
+            Authorization: `Bearer ${getCookie("access_token")}`,
             "Content-Type": "application/json",
-            "X-CSRFToken": VueCookies.get("csrftoken"),
+            "X-CSRFToken": getCookie("csrftoken"),
           },
           credentials: "include",
           body: JSON.stringify({
@@ -361,9 +361,9 @@ export default defineComponent({
         const response = await fetch("http://localhost:8000/trialAnswer/", {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${VueCookies.get("access_token")}`,
+            Authorization: `Bearer ${getCookie("access_token")}`,
             "Content-Type": "application/json",
-            "X-CSRFToken": VueCookies.get("csrftoken"),
+            "X-CSRFToken": getCookie("csrftoken"),
           },
           credentials: "include",
           body: JSON.stringify({
@@ -403,9 +403,9 @@ export default defineComponent({
           const response = await fetch("http://localhost:8000/trialSelection/", {
             method: "POST",
             headers: {
-              Authorization: `Bearer ${VueCookies.get("access_token")}`,
+              Authorization: `Bearer ${getCookie("access_token")}`,
               "Content-Type": "application/json",
-              "X-CSRFToken": VueCookies.get("csrftoken"),
+              "X-CSRFToken": getCookie("csrftoken"),
             },
             credentials: "include",
             body: JSON.stringify({

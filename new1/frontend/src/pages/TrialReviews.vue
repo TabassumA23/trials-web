@@ -117,7 +117,7 @@ import { useUserStore } from "../stores/user";
 import { useUsersStore } from "../stores/users";
 import { useTrialsStore } from "../stores/trials";
 import { useTrialReviewsStore } from "../stores/trialReviews";
-import VueCookies from "vue-cookies";
+import { getCookie } from "../utils/cookies";
 
 export default defineComponent({
   data() {
@@ -223,9 +223,9 @@ export default defineComponent({
         const res = await fetch(`http://localhost:8000/trialReview/${id}/`, {
           method: "PUT",
           headers: {
-            Authorization: `Bearer ${VueCookies.get("access_token")}`,
+            Authorization: `Bearer ${getCookie("access_token")}`,
             "Content-Type": "application/json",
-            "X-CSRFToken": VueCookies.get("csrftoken"),
+            "X-CSRFToken": getCookie("csrftoken"),
           },
           credentials: "include",
           body: JSON.stringify(payload),
@@ -264,9 +264,9 @@ export default defineComponent({
         await fetch("http://localhost:8000/trialReviews/", {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${VueCookies.get("access_token")}`,
+            Authorization: `Bearer ${getCookie("access_token")}`,
             "Content-Type": "application/json",
-            "X-CSRFToken": VueCookies.get("csrftoken"),
+            "X-CSRFToken": getCookie("csrftoken"),
           },
           credentials: "include",
           body: JSON.stringify(payload),
@@ -291,9 +291,9 @@ export default defineComponent({
         const response = await fetch(`http://localhost:8000/trialReview/${reviewId}/`, {
           method: "DELETE",
           headers: {
-            Authorization: `Bearer ${VueCookies.get("access_token")}`,
+            Authorization: `Bearer ${getCookie("access_token")}`,
             "Content-Type": "application/json",
-            "X-CSRFToken": VueCookies.get("csrftoken"),
+            "X-CSRFToken": getCookie("csrftoken"),
           },
           credentials: "include",
         });

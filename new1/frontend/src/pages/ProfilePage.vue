@@ -133,7 +133,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import VueCookies from "vue-cookies";
+import { getCookie } from "../utils/cookies";
 
 import type {
   User,
@@ -322,9 +322,9 @@ export default defineComponent({
         const response = await fetch(`http://localhost:8000/user/${this.user.id}/`, {
           method: "PUT",
           headers: {
-            Authorization: `Bearer ${VueCookies.get("access_token")}`,
+            Authorization: `Bearer ${getCookie("access_token")}`,
             "Content-Type": "application/json",
-            "X-CSRFToken": VueCookies.get("csrftoken"),
+            "X-CSRFToken": getCookie("csrftoken"),
           },
           credentials: "include",
           body: JSON.stringify(payload),
