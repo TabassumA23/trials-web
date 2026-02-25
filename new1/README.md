@@ -64,6 +64,7 @@ Once your project is ready to be deployed you will need to 'build' the Vue app a
 
 - Copy `.env.example` to `.env` and set real production values.
 - Use `DEPLOY_SECURITY_CHECKLIST.md` before go-live.
+- Use `OPS_RUNBOOK.md` to complete monitoring, backups, incident response, and compliance operations.
 
 ## License
 

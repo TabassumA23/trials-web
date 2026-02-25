@@ -1,10 +1,10 @@
 import json
 from django.conf import settings
+from django.core.cache import cache
 from django.contrib.sessions.models import Session
 from django.http import HttpResponse, HttpRequest, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import auth
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
@@ -12,6 +12,46 @@ from django.utils.dateparse import parse_datetime
 
 from .models import TrialParticipation, Trial, User, TrialQuestionAnswer, TrialQuestion, TrialReview, TrialOption,TrialSpecificSelection
 from .forms import LoginForm, SignUpForm, UpdatePassForm, UpdateUserForm
+
+
+AUTH_RATE_LIMIT_MAX_ATTEMPTS = getattr(settings, "AUTH_RATE_LIMIT_MAX_ATTEMPTS", 10)
+AUTH_RATE_LIMIT_WINDOW_SECONDS = getattr(settings, "AUTH_RATE_LIMIT_WINDOW_SECONDS", 300)
+
+
+def _client_ip(request: HttpRequest) -> str:
+    forwarded = request.META.get("HTTP_X_FORWARDED_FOR", "")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.META.get("REMOTE_ADDR", "unknown")
+
+
+def _auth_rate_limited(action: str, request: HttpRequest, username: str = "") -> bool:
+    ip_key = f"auth_rl:{action}:ip:{_client_ip(request)}"
+    if (cache.get(ip_key) or 0) >= AUTH_RATE_LIMIT_MAX_ATTEMPTS:
+        return True
+
+    if username:
+        user_key = f"auth_rl:{action}:user:{username.lower()}"
+        if (cache.get(user_key) or 0) >= AUTH_RATE_LIMIT_MAX_ATTEMPTS:
+            return True
+    return False
+
+
+def _auth_rate_record_failure(action: str, request: HttpRequest, username: str = "") -> None:
+    ip_key = f"auth_rl:{action}:ip:{_client_ip(request)}"
+    ip_count = cache.get(ip_key) or 0
+    cache.set(ip_key, ip_count + 1, AUTH_RATE_LIMIT_WINDOW_SECONDS)
+
+    if username:
+        user_key = f"auth_rl:{action}:user:{username.lower()}"
+        user_count = cache.get(user_key) or 0
+        cache.set(user_key, user_count + 1, AUTH_RATE_LIMIT_WINDOW_SECONDS)
+
+
+def _auth_rate_reset(action: str, request: HttpRequest, username: str = "") -> None:
+    cache.delete(f"auth_rl:{action}:ip:{_client_ip(request)}")
+    if username:
+        cache.delete(f"auth_rl:{action}:user:{username.lower()}")
 
 # Authenticate login before Vue SPA redirect
 def login_user(request: HttpRequest) -> HttpResponse:
@@ -22,14 +62,28 @@ def login_user(request: HttpRequest) -> HttpResponse:
         if form.is_valid():
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password"]
+
+            if _auth_rate_limited("login", request, username):
+                return render(
+                    request,
+                    "api/auth/login.html",
+                    {
+                        "form": form,
+                        "message": "Too many login attempts. Please wait and try again.",
+                    },
+                    status=429,
+                )
+
             user = auth.authenticate(username=username, password=password)
             # Rendering Vue SPA if user is found
             if user is not None:
+                _auth_rate_reset("login", request, username)
                 auth.login(request, user)
                 # Saving user id in variable to add to redirect as query
                 user_id=user.id
                 return redirect(settings.LOGIN_REDIRECT_URL+'?u=%s' %user_id)
             else:
+                _auth_rate_record_failure("login", request, username)
                 # Show failed authentication
                 return render(request, "api/auth/login.html", {"form": form, "message": 'Username or password invalid, please try again.'})
     else:
@@ -53,6 +107,18 @@ def signup_user(request: HttpRequest) -> HttpResponse:
             password = form.cleaned_data["password"]
             selected_trial = form.cleaned_data["selected_trial"]
             selected_trial_option_id = form.cleaned_data["selected_trial_option"]
+
+            if _auth_rate_limited("signup", request, username):
+                return render(
+                    request,
+                    "api/auth/signup.html",
+                    {
+                        "form": form,
+                        "trials": Trial.objects.select_related("question").prefetch_related("options").all(),
+                        "message": "Too many signup attempts. Please wait and try again.",
+                    },
+                    status=429,
+                )
             # user_type field commented out in your model
             # user_type = form.cleaned_data.get("user_type", UserType.CUSTOMER)
 
@@ -98,12 +164,14 @@ def signup_user(request: HttpRequest) -> HttpResponse:
                 )
 
                 # Log in the new user
+                _auth_rate_reset("signup", request, username)
                 auth.login(request, user)
 
                 # Redirect to Vue SPA with user ID
                 user_id = user.id
                 return redirect(f"{settings.LOGIN_REDIRECT_URL}?u={user_id}")
             else:
+                _auth_rate_record_failure("signup", request, username)
                 # Show failed user creation
                 return render(
                     request,
@@ -114,6 +182,14 @@ def signup_user(request: HttpRequest) -> HttpResponse:
                         "message": "User already exists with that username. Please try again.",
                     },
                 )
+        else:
+            attempted_username = request.POST.get("username", "")
+            _auth_rate_record_failure("signup", request, attempted_username)
+            return render(
+                request,
+                "api/auth/signup.html",
+                {"form": form, "trials": Trial.objects.select_related("question").prefetch_related("options").all()},
+            )
     else:
         form = SignUpForm()
     return render(
@@ -180,7 +256,6 @@ def users_api(request: HttpRequest) -> JsonResponse:
                 option = TrialOption.objects.get(id=option_id)
                 TrialSpecificSelection.objects.create(user=user, option=option)
 
-            return JsonResponse(user.as_dict(), status=201)
             return JsonResponse(user.as_dict(), status=201)
        # Handle missing related objects
         except (Trial.DoesNotExist, TrialQuestion.DoesNotExist, TrialOption.DoesNotExist):
