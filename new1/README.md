@@ -60,6 +60,11 @@ Once your project is ready to be deployed you will need to 'build' the Vue app a
 
 2. You should then follow the instruction on QM+ on how to deploy your app on EECS's OpenShift live server.
 
+## Production deployment (Cure-Link)
+
+- Copy `.env.example` to `.env` and set real production values.
+- Use `DEPLOY_SECURITY_CHECKLIST.md` before go-live.
+
 ## License
 
 This code is dedicated to the public domain to the maximum extent permitted by applicable law, pursuant to [CC0](http://creativecommons.org/publicdomain/zero/1.0/).
